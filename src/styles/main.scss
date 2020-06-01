@@ -1,0 +1,85 @@
+html, body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #000;
+    color: #fff;
+    font-size: 16px;
+    user-select: none;
+    margin: 0;
+}
+
+h1 {
+    font-size: 2em;
+    font-weight: bold;
+    margin: 15px 0 15px 0;
+}
+
+.board {
+    margin: 30px;
+}
+
+.boardContainer {
+    display: flex;
+}
+
+.taskList, .addTaksList {
+    position: relative;
+    background: #000;
+    color: #fff;
+    width: 350px;
+    padding: 10px;
+    margin: 5px;
+}
+
+.task, .addTask {
+    position: relative;
+    background: #1c1c1e;
+    padding: 14px 35px 30px 35px;
+    margin-bottom: 30px;
+    border-radius: 15px;
+    color: #fff;
+    font-size: 16px;
+}
+
+.deleteTask {
+    position: absolute;
+    right: 15px;
+    bottom: 10px;
+    cursor: pointer;
+    color: #99989d;
+}
+
+.deleteTaskList {
+    position: absolute;
+    top: 30px;
+    right: 29px;
+    cursor: pointer;
+    color: #99989d;
+}
+
+.deleteTask:hover, .deleteTaskList:hover {
+    color: #ef6e6e;
+}
+
+
+
+.addTask textarea {
+    background-color: transparent;
+    border: transparent;
+    color: #fff;
+    outline: none;
+    width: 100%;
+    height: 45px;
+    font-size: 16px;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.addTaksList input[type="text"] {
+    background-color: transparent;
+    border: transparent;
+    color: #fff;
+    outline: none;
+    width: 100%;
+    font-size: 2em;
+    font-weight: bold;
+    margin: 15px 0 15px 0;
+}
