@@ -3,14 +3,16 @@ import DomService from '../services/DomService';
 import StorageService from '../services/StorageService';
 
 class KanbanApp {
-    board: any
-    rootElement: any;
+
+    rootElement: HTMLElement;
+    board: KanbanBoard;
+
 
     constructor() {
-        this.addNewTaskList()
+        this.createBoard()
     }
 
-    addNewTaskList() {
+    createBoard() {
 
         const data = this.getData()
 
@@ -36,7 +38,7 @@ class KanbanApp {
         )
 
         StorageService.save(
-            boardData
+            JSON.stringify(boardData)
         )
     }
 

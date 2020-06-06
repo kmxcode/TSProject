@@ -1,24 +1,30 @@
-import TaskList from "./TaskList";
+import TaskList, { ITaskListData } from "./TaskList";
 import BoardElement from "../elements/BoardElement";
 import KanbanApp from "./KanbanApp";
 
+interface IBoardData {
+    id: number;
+    name: string;
+    taskLists: Array<ITaskListData>
+}
 
 class KanbanBoard {
-    id: any;
-    name: any;
-    taskLists: any;
-    element: any;
+    id: number;
+    name: string;
+    taskLists: Array<TaskList>;
+    element: HTMLDivElement;
     parent: KanbanApp;
 
 
 
-    constructor(data: any, parent: KanbanApp) {
+
+    constructor(data: IBoardData, parent: KanbanApp) {
         this.id = data.id
         this.name = data.name
         this.parent = parent
         this.taskLists = []
         if(data.taskLists) {
-            data.taskLists.forEach((taskListData: any) => {
+            data.taskLists.forEach((taskListData) => {
                 const taskList = new TaskList(taskListData, this)
                 this.taskLists.push(taskList)
             });
@@ -30,7 +36,7 @@ class KanbanBoard {
 
     createElement() {
         const events = {
-            addEvent: (event: any, value: any) => this.addEvent(event, value)
+            addEvent: (event: KeyboardEvent, value: string) => this.addEvent(event, value)
         }
 
         const data = {
@@ -48,28 +54,43 @@ class KanbanBoard {
         return this.element
     }
 
-    addEvent(event: any, value: any) {
+    addEvent(event: KeyboardEvent, value: string) {
         if(event.code == 'Enter') {
             this.createNewTaskList(value)
         }
     }
 
-    createNewTaskList(name: any) {
+    createNewTaskList(name: string) {
         const newTaskList = new TaskList({
             id: this.getId(),
-            name: name
+            name: name,
+            tasks: []
         }, this)
 
         this.addNewTaskList(newTaskList)
     }
 
-    addNewTaskList(taskList: any) {
+    addNewTaskList(taskList: TaskList) {
         this.taskLists.push(taskList)
         this.update()
     }
 
-    deleteTaskList(taskListId: any) {
-        this.taskLists = this.taskLists.filter((taskList: any) =>
+    insertTaskListBefore(taskListData: ITaskListData, beforeTaskListId: number) {
+        const taskList = new TaskList({
+            id: this.getId(),
+            name: taskListData.name,
+            tasks: taskListData.tasks
+        }, this)
+
+        const taskListIndex = this.taskLists.findIndex(
+            (taskList) => taskList.id == beforeTaskListId
+        )
+
+        this.taskLists.splice(taskListIndex, 0, taskList)
+    }
+
+    deleteTaskList(taskListId: number) {
+        this.taskLists = this.taskLists.filter((taskList) =>
             taskList.id !== taskListId
         )
         this.update()
@@ -89,7 +110,7 @@ class KanbanBoard {
         return {
             id: this.id,
             name: this.name,
-            taskLists: this.taskLists.map((taskList: any) =>
+            taskLists: this.taskLists.map((taskList) =>
                 taskList.getData()    
             )
         }

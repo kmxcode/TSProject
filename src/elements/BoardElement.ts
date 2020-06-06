@@ -1,11 +1,23 @@
+import TaskList from '../components/TaskList'
+
+interface IEventList {
+    [propName: string]: (event?: DragEvent | MouseEvent | KeyboardEvent, input?: string) => void
+}
+
+interface IBoardElementData {
+    title: string;
+    events: IEventList;
+    taskLists: Array<TaskList>
+}
+
 class BoardElement {
-    title: any;
-    taskLists: any;
-    events: any;
-    element: any;
+    title: string;
+    taskLists: Array<TaskList>;
+    events: IEventList;
+    element: HTMLDivElement;
 
 
-    constructor(data: any) {
+    constructor(data: IBoardElementData) {
         this.title = data.title;
         this.taskLists = data.taskLists;
         this.events = data.events;
@@ -49,9 +61,9 @@ class BoardElement {
         const boardContainerEl = document.createElement('div')
         boardContainerEl.setAttribute('class', 'boardContainer')
 
-        this.taskLists.forEach((task: any) => {
-            const taskEl = task.getElement()
-            boardContainerEl.appendChild(taskEl)
+        this.taskLists.forEach((taskList) => {
+            const taskListEl = taskList.getElement()
+            boardContainerEl.appendChild(taskListEl)
         });
 
         return boardContainerEl
@@ -65,7 +77,7 @@ class BoardElement {
         input.setAttribute('type', 'text')
         input.setAttribute('placeholder', 'Name...')
 
-        input.addEventListener('keypress', (event) => 
+        input.addEventListener('keypress', (event: KeyboardEvent) => 
             this.events.addEvent(
                 event,
                 input.value

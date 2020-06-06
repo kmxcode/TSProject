@@ -1,9 +1,9 @@
 class StorageService {
 
-    static save(data: any) {
+    static save(data: string) {
         localStorage.setItem(
             'data',
-            JSON.stringify(data)
+            data
         )
     }
 

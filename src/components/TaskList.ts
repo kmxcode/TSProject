@@ -1,23 +1,29 @@
-import Task from "./Task";
+import Task, { ITaskData } from "./Task";
 import ListElement from "../elements/ListElement";
 import KanbanBoard from "./KanbanBoard";
 
+export interface ITaskListData {
+    id: number;
+    name: string;
+    tasks: Array<ITaskData>
+}
+
 class TaskList {
-    id: any;
-    name: any;
-    tasks: any;
-    element: any;
+    id: number;
+    name: string;
+    tasks: Array<Task>;
+    element: HTMLDivElement;
     parent: KanbanBoard;
 
 
 
-    constructor(data: any, parent: KanbanBoard) {
+    constructor(data: ITaskListData, parent: KanbanBoard) {
         this.id = data.id
         this.name = data.name
         this.parent = parent
         this.tasks = []
         if(data.tasks) {
-            data.tasks.forEach((taskData: any) => {
+            data.tasks.forEach((taskData) => {
                 const task = new Task(taskData, this)
                 this.tasks.push(task)
             });
@@ -30,7 +36,11 @@ class TaskList {
     createElement() {
         const events = {
             deleteEvent: () => this.deleteEvent(),
-            addEvent: (event: any, value: any) => this.addEvent(event, value)
+            addEvent: (event: KeyboardEvent, value: string) => this.addEvent(event, value),
+            dragStartEvent: (event: DragEvent) => this.onDragStart(event),
+            dragEndEvent: (event: DragEvent) => this.onDragEnd(event),
+            dragOverEvent: (event: DragEvent) => this.onDragOver(event),
+            dropEvent: (event: DragEvent) => this.onDrop(event),
         }
 
         const data = {
@@ -41,7 +51,33 @@ class TaskList {
 
         const list = new ListElement(data)
         this.element = list.getElement()
-        console.log(this.element)
+    }
+    
+    onDragStart(event: DragEvent) {
+        const taskListData = JSON.stringify(
+            this.getData()
+        )
+
+        event.dataTransfer.setData('TaskList', taskListData)
+    }
+
+    onDragEnd(event: DragEvent) {
+        if(event.dataTransfer.dropEffect == 'move') {
+            this.deleteEvent()
+        }
+    }
+
+    onDragOver(event: DragEvent) {
+        event.preventDefault()
+    }
+
+    onDrop(event: DragEvent) {
+        event.preventDefault();
+        const taskListData = JSON.parse(
+            event.dataTransfer.getData('TaskList')
+        )
+        
+        this.parent.insertTaskListBefore(taskListData, this.id)
     }
 
     getElement() {
@@ -52,34 +88,45 @@ class TaskList {
         this.deleteTaskList(this.id)
     }
 
-    deleteTaskList(id: any) {
+    deleteTaskList(id: number) {
         this.parent.deleteTaskList(id)
     }
 
-    addEvent(event: any, value: any) {
+    addEvent(event: KeyboardEvent, value: string) {
         if(event.code == 'Enter') {
             this.createNewTask(value)
         }
     }
 
-    createNewTask(desc: any) {
+    createNewTask(desc: string) {
         const newTask = new Task({
             id: this.getId(),
             description: desc
         }, this) 
-        console.log(this.getId())
 
         this.addNewTask(newTask)
     }
 
-    addNewTask(task: any) {
+    addNewTask(task: Task) {
         this.tasks.push(task)
         this.update()
     }
 
+    insertTaskBefore(desc: string, beforeTaskId: number) {
+        const task = new Task({
+            id: this.getId(),
+            description: desc
+        }, this)
 
-    deleteTask(taskId: any) {
-        this.tasks = this.tasks.filter((task: any) =>
+        const taskIndex = this.tasks.findIndex(
+            (task) => task.id == beforeTaskId
+        )
+
+        this.tasks.splice(taskIndex, 0, task)
+    }
+
+    deleteTask(taskId: number) {
+        this.tasks = this.tasks.filter((task: Task) =>
             task.id !== taskId
         )
         this.update()
@@ -99,7 +146,7 @@ class TaskList {
         return {
             id: this.id,
             name: this.name,
-            tasks: this.tasks.map((task: any) =>
+            tasks: this.tasks.map((task: Task) =>
                 task.getData()    
             )
         }

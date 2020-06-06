@@ -1,11 +1,23 @@
+import Task from '../components/Task'
+
+interface IEventList {
+    [propName: string]: (event?: DragEvent | MouseEvent | KeyboardEvent, input?: string) => void
+}
+
+interface IListElementData {
+    title: string;
+    events: IEventList;
+    tasks: Array<Task>
+}
+
 class ListElement {
-    title: any;
-    tasks: any;
-    events: any;
-    element: any;
+    title: string;
+    tasks: Array<Task>;
+    events: IEventList;
+    element: HTMLDivElement;
 
 
-    constructor(data: any) {
+    constructor(data: IListElementData) {
         this.title = data.title;
         this.tasks = data.tasks;
         this.events = data.events;
@@ -43,6 +55,12 @@ class ListElement {
     createTitleEl() {
         const titleEl = document.createElement('h1')
         titleEl.innerHTML = this.title
+        titleEl.setAttribute('draggable', 'true')
+
+        titleEl.addEventListener('dragstart', (event: DragEvent) => this.events.dragStartEvent(event))
+        titleEl.addEventListener('dragend', (event: DragEvent) => this.events.dragEndEvent(event))
+        titleEl.addEventListener('dragover', (event: DragEvent) => this.events.dragOverEvent(event))
+        titleEl.addEventListener('drop', (event: DragEvent) => this.events.dropEvent(event))
 
         return titleEl
     }
@@ -50,8 +68,10 @@ class ListElement {
     createListEl() {
         const listEl = document.createElement('div')
         listEl.setAttribute('class', 'list')
+        listEl.addEventListener('dragover', (event: DragEvent) => this.events.dragTaskOverEvent(event))
+        listEl.addEventListener('drop', (event: DragEvent) => this.events.dropTaskEvent(event))
 
-        this.tasks.forEach((task: any) => {
+        this.tasks.forEach((task) => {
             const taskEl = task.getElement()
             listEl.appendChild(taskEl)
         })

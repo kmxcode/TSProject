@@ -1,6 +1,6 @@
 class DomService {
 
-  static render(element: any, container: any) {
+  static render(element: HTMLDivElement, container: HTMLElement) {
     container.innerHTML = ''
     container.appendChild(element)
   }

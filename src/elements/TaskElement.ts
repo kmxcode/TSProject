@@ -1,10 +1,19 @@
+interface IEventList {
+    [propName: string]: (event?: DragEvent | MouseEvent) => void
+}
+
+interface ITaskElementData {
+    description: string;
+    events: IEventList;
+}
+
 class TaskElement {
-    description: any;
-    events: any;
-    element: any;
+    description: string;
+    events: IEventList;
+    element: HTMLDivElement;
 
 
-    constructor(data: any) {
+    constructor(data: ITaskElementData) {
         this.description = data.description;
         this.events = data.events;
 
@@ -30,6 +39,13 @@ class TaskElement {
     createTaskEl() {
         const taskEl = document.createElement('div')
         taskEl.setAttribute('class', 'task')
+        taskEl.setAttribute('draggable', 'true')
+
+        taskEl.addEventListener('dragstart', (event: DragEvent) => this.events.dragStartEvent(event))
+        taskEl.addEventListener('dragend', (event: DragEvent) => this.events.dragEndEvent(event))
+        taskEl.addEventListener('dragover', (event: DragEvent) => this.events.dragOverEvent(event))
+        taskEl.addEventListener('drop', (event: DragEvent) => this.events.dropEvent(event))
+        
 
         return taskEl
     }
