@@ -18,7 +18,7 @@
     "babel-loader": "^8.1.0",
     "copy-webpack-plugin": "^5.1.1",
     "css-loader": "^3.4.2",
-    "node-sass": "^4.13.1",
+    "node-sass": "^7.0.0",
     "sass-loader": "^8.0.2",
     "source-map-loader": "^0.2.4",
     "style-loader": "^1.1.3",
